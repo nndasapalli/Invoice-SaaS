@@ -1,0 +1,57 @@
+CREATE TABLE users (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(30) DEFAULT 'USER',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customers (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  name VARCHAR(200) NOT NULL,
+  phone VARCHAR(50),
+  email VARCHAR(150),
+  gst_number VARCHAR(50),
+  address TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE products (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  name VARCHAR(200),
+  price DECIMAL(12,2) NOT NULL,
+  gst_rate INT DEFAULT 18,
+  unit VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE invoices (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  customer_id BIGINT NOT NULL,
+  invoice_number VARCHAR(100) NOT NULL,
+  invoice_date DATE NOT NULL,
+  total_amount DECIMAL(12,2),
+  total_tax DECIMAL(12,2),
+  grand_total DECIMAL(12,2),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
+);
+
+CREATE TABLE invoice_items (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  invoice_id BIGINT NOT NULL,
+  product_id BIGINT,
+  description VARCHAR(500),
+  quantity DECIMAL(10,2) DEFAULT 1,
+  price DECIMAL(12,2),
+  tax_amount DECIMAL(12,2),
+  amount DECIMAL(12,2),
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+);
